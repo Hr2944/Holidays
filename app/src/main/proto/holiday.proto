@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto.holiday;
+
+import "time.proto";
+
+option java_package = "com.hrb.holidays.proto.holiday";
+option java_multiple_files = true;
+
+message HolidayPeriod {
+    string name = 1;
+    time.LocalDate from_date = 2;
+    time.LocalDate to_date = 3;
+}
+
+message HolidaysTimetable {
+    repeated HolidayPeriod holiday_periods = 1;
+}
