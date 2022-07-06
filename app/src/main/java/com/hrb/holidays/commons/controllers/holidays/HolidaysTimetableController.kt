@@ -2,7 +2,7 @@ package com.hrb.holidays.commons.controllers.holidays
 
 import com.hrb.holidays.commons.entities.holidays.HolidayPeriod
 import com.hrb.holidays.commons.entities.holidays.HolidaysTimetable
-import com.hrb.holidays.commons.databases.holidays.IHolidaysTimetableGateway
+import com.hrb.holidays.app.databases.holidays.IHolidaysTimetableGateway
 
 class HolidaysTimetableController(
     private val holidaysGateway: IHolidaysTimetableGateway

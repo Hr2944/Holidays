@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package proto.office;
+package proto.day;
 
 option java_package = "com.hrb.holidays.proto.day";
 option java_multiple_files = true;

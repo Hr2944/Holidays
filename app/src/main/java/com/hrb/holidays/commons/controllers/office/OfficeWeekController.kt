@@ -2,7 +2,7 @@ package com.hrb.holidays.commons.controllers.office
 
 import com.hrb.holidays.commons.entities.office.OfficeDay
 import com.hrb.holidays.commons.entities.office.OfficeWeek
-import com.hrb.holidays.commons.databases.office.IOfficeWeekGateway
+import com.hrb.holidays.app.databases.office.IOfficeWeekGateway
 
 class OfficeWeekController(
     private val officeWeekFetcher: IOfficeWeekGateway

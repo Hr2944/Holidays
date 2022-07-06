@@ -9,7 +9,7 @@ option java_package = "com.hrb.holidays.proto.office";
 option java_multiple_files = true;
 
 message OfficeDay {
-    DayOfWeek day_of_week = 1;
+    day.DayOfWeek day_of_week = 1;
     time.LocalTime start_at = 2;
     time.LocalTime end_at = 3;
 }

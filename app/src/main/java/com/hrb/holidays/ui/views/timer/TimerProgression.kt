@@ -10,15 +10,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Composable
-fun TimerProgression(modifier: Modifier = Modifier) {
+fun TimerProgression(
+    modifier: Modifier = Modifier,
+    progress: Float,
+    fromDate: LocalDate,
+    toDate: LocalDate
+) {
+    val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+
     Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        ProgressionBar(.5f, modifier = Modifier.fillMaxWidth(.95f))
+        ProgressionBar(progress, modifier = Modifier.fillMaxWidth(.95f))
         Spacer(modifier = Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text(text = "01/01", style = MaterialTheme.typography.caption)
-            Text(text = "31/12", style = MaterialTheme.typography.caption)
+            Text(text = fromDate.format(dateFormatter), style = MaterialTheme.typography.caption)
+            Text(text = toDate.format(dateFormatter), style = MaterialTheme.typography.caption)
         }
     }
 }

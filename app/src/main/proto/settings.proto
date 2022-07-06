@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto.settings;
+
+option java_package = "com.hrb.holidays.proto.settings";
+option java_multiple_files = true;
+
+enum Theme {
+    THEME_UNSPECIFIED = 0;
+    THEME_LIGHT = 1;
+    THEME_DARK = 2;
+}
+
+message Settings {
+    Theme theme = 1;
+}

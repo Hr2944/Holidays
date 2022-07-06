@@ -13,21 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.hrb.holidays.commons.presenters.office.RemainingTime
-
+import com.hrb.holidays.app.presenters.office.RemainingTime
 
 @Composable
-fun Timer(
-    remainingTime: RemainingTime,
-    modifier: Modifier = Modifier
-) {
+fun MessageTimer(message: String, subtitle: String, modifier: Modifier) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         Text(
-            text = remainingTime.toString(),
+            text = message,
             modifier = Modifier
                 .border(
                     width = 1.dp,
@@ -40,9 +36,21 @@ fun Timer(
             style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold)
         )
         Text(
-            text = "For a total of ${remainingTime.asSecondsString()} seconds",
+            text = subtitle,
             style = MaterialTheme.typography.caption,
             modifier = Modifier.padding(top = 8.dp)
         )
     }
+}
+
+@Composable
+fun Timer(
+    remainingTime: RemainingTime,
+    modifier: Modifier = Modifier
+) {
+    MessageTimer(
+        modifier = modifier,
+        message = remainingTime.toString(),
+        subtitle = "For a total of ${remainingTime.asSecondsString()} seconds"
+    )
 }

@@ -1,6 +1,6 @@
 package com.hrb.holidays.commons.interactors.office
 
-import com.hrb.holidays.commons.databases.office.IOfficeWeekGateway
+import com.hrb.holidays.app.databases.office.IOfficeWeekGateway
 import com.hrb.holidays.commons.entities.office.OfficeDay
 import com.hrb.holidays.commons.entities.office.OfficeWeek
 import java.time.Duration
@@ -12,21 +12,36 @@ class RangeOfficeTimeCalculator(
     private val officeWeekGateway: IOfficeWeekGateway
 ) : IRangeOfficeTimeCalculator {
 
-    override fun calculate(from: LocalDateTime, to: LocalDateTime): Duration {
+    override fun calculateOfficeTimeInDatesRange(from: LocalDateTime, to: LocalDateTime): Duration {
         var remainingTime = Duration.ZERO
         var currentEvaluatedDay = from
-
         if (isOfficeDayStarted(currentEvaluatedDay)) {
-            remainingTime += getPendingOfficeTime(currentEvaluatedDay)
+            remainingTime += getRemainingOfficeTimeForDay(currentEvaluatedDay)
             currentEvaluatedDay = currentEvaluatedDay.plusDays(1).with(LocalTime.MIDNIGHT)
         }
-
         while (currentEvaluatedDay.isBefore(to) or currentEvaluatedDay.isEqual(to)) {
             remainingTime += getOfficeTimeForDay(currentEvaluatedDay)
             currentEvaluatedDay = currentEvaluatedDay.plusDays(1)
         }
-
         return remainingTime
+    }
+
+    override fun calculateOfficeTimeProgressInDatesRange(
+        from: LocalDateTime,
+        to: LocalDateTime,
+        atTime: LocalDateTime
+    ): Float {
+        if (atTime.isBefore(from) or atTime.isAfter(to)) {
+            throw IllegalArgumentException(
+                "atTime ($atTime) must be between from ($from) and to ($to)"
+            )
+        }
+        val totalTimeInRange = calculateOfficeTimeInDatesRange(from, to)
+        val currentRemainingTime = calculateOfficeTimeInDatesRange(atTime, to)
+        return 1 - (
+                currentRemainingTime.toMillis().toFloat() /
+                        totalTimeInRange.toMillis().toFloat()
+                )
     }
 
     private fun getOfficeDay(day: LocalDateTime, officeWeek: OfficeWeek): OfficeDay {
@@ -42,7 +57,7 @@ class RangeOfficeTimeCalculator(
         return getOfficeDay(day, officeWeekGateway.fetch()).officeTime()
     }
 
-    private fun getPendingOfficeTime(day: LocalDateTime): Duration {
+    private fun getRemainingOfficeTimeForDay(day: LocalDateTime): Duration {
         val officeDay = getOfficeDay(day, officeWeekGateway.fetch())
         return Duration.between(day.toLocalTime(), officeDay.endAt)
     }

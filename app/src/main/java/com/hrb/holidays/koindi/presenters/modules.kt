@@ -1,8 +1,9 @@
 package com.hrb.holidays.koindi.presenters
 
-import com.hrb.holidays.commons.presenters.holidays.HolidaysTimetableScreenPresenter
-import com.hrb.holidays.commons.presenters.office.OfficeTimeBeforeHolidaysScreenPresenter
-import com.hrb.holidays.commons.presenters.office.OfficeWeekScreenPresenter
+import com.hrb.holidays.app.presenters.settings.SettingsScreenPresenter
+import com.hrb.holidays.app.presenters.holidays.HolidaysTimetableScreenPresenter
+import com.hrb.holidays.app.presenters.office.OfficeTimeBeforeHolidaysScreenPresenter
+import com.hrb.holidays.app.presenters.office.OfficeWeekScreenPresenter
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -12,4 +13,6 @@ val presentersModule = module {
     viewModel { HolidaysTimetableScreenPresenter(get()) }
 
     viewModel { OfficeWeekScreenPresenter(get()) }
+
+    viewModel { SettingsScreenPresenter(get()) }
 }

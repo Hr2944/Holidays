@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomAppBar
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
@@ -18,9 +19,7 @@ import androidx.compose.ui.Modifier
 @Composable
 fun BottomBar(onOpenWeekCalendar: () -> Unit, onOpenHolidaysCalendar: () -> Unit) {
     BottomAppBar(
-        cutoutShape = MaterialTheme.shapes.small.copy(
-            CornerSize(percent = 50)
-        )
+        cutoutShape = RoundedCornerShape(50)
     ) {
         Row(
             Modifier

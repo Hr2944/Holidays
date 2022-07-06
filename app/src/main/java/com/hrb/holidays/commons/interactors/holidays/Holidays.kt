@@ -1,28 +1,22 @@
 package com.hrb.holidays.commons.interactors.holidays
 
-import com.hrb.holidays.commons.databases.holidays.IHolidaysTimetableGateway
+import com.hrb.holidays.app.databases.holidays.IHolidaysTimetableGateway
 import com.hrb.holidays.commons.entities.holidays.HolidayPeriod
 import java.time.LocalDate
 
 class Holidays(private val holidaysGateway: IHolidaysTimetableGateway) : IHolidays {
 
-    override fun nextHolidaysAfterDate(date: LocalDate): HolidayPeriod {
+    override fun nextAfter(date: LocalDate): HolidayPeriod? {
         val sortedHolidays = sortHolidays(holidaysGateway.fetch().timetable)
-        // When there are no holidays after the given date, it means the next holidays are the first
-        // of the list plus one year (assuming the list is sorted and holidays are periodic)
-        val nextHolidays = sortedHolidays.firstOrNull { it.fromDate.isAfter(date) }
-        return if (nextHolidays == null) {
-            val firstHoliday = sortedHolidays.first()
-            firstHoliday.copy(
-                fromDate = firstHoliday.fromDate.plusYears(1),
-                toDate = firstHoliday.toDate.plusYears(1)
-            )
-        } else {
-            nextHolidays
-        }
+        return sortedHolidays.firstOrNull { it.fromDate.isAfter(date) }
     }
 
-    override fun getHolidaysAtDate(date: LocalDate): HolidayPeriod? {
+    override fun previousBefore(date: LocalDate): HolidayPeriod? {
+        val reverseSortedHolidays = sortHolidays(holidaysGateway.fetch().timetable).reversedArray()
+        return reverseSortedHolidays.firstOrNull { it.toDate.isBefore(date) }
+    }
+
+    override fun at(date: LocalDate): HolidayPeriod? {
         for (holidays in holidaysGateway.fetch().timetable) {
             if (date.isAfter(holidays.fromDate) && date.isBefore(holidays.toDate)) {
                 return holidays

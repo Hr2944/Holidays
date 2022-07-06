@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.hrb.holidays.commons.entities.holidays.HolidayPeriod
-import com.hrb.holidays.commons.presenters.holidays.HolidaysTimetableScreenPresenter
+import com.hrb.holidays.app.presenters.holidays.HolidaysTimetableScreenPresenter
 import com.hrb.holidays.ui.views.base.DrawerTopBar
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker

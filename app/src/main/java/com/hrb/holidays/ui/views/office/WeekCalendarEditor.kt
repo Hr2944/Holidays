@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.hrb.holidays.commons.entities.office.OfficeDay
-import com.hrb.holidays.commons.presenters.office.OfficeWeekScreenPresenter
+import com.hrb.holidays.app.presenters.office.OfficeWeekScreenPresenter
 import com.hrb.holidays.ui.modifiers.frame
 import com.hrb.holidays.ui.views.base.DrawerTopBar
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -128,7 +128,11 @@ fun Day(
         }
     ) {
         timepicker(is24HourClock = true, title = "Select End Time") { selectedEndTime ->
-            onChangeTime(tempStartTime, selectedEndTime, day)
+            if (selectedEndTime.isAfter(tempStartTime)) {
+                onChangeTime(tempStartTime, selectedEndTime, day)
+            } else {
+                onChangeTime(selectedEndTime, tempStartTime, day)
+            }
         }
     }
 
