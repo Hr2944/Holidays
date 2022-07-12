@@ -1,14 +1,16 @@
 package com.hrb.holidays.ui.views.base
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FabPosition
+import androidx.compose.material.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.hrb.holidays.app.presenters.office.OfficeTimeBeforeHolidaysScreenPresenter
 import com.hrb.holidays.ui.layouts.*
+import com.hrb.holidays.ui.views.holidays.HolidaysCalendarEditorScreenActivity
+import com.hrb.holidays.ui.views.office.WeekCalendarEditorScreenActivity
 import com.hrb.holidays.ui.views.settings.SettingsScreenActivity
 import com.hrb.holidays.ui.views.timer.FloatingPauseButton
 import com.hrb.holidays.ui.views.timer.TimerScreen
@@ -39,14 +41,18 @@ fun BaseScreenActivity(
     timerPresenter: OfficeTimeBeforeHolidaysScreenPresenter = getViewModel(),
 ) {
     val scope = rememberCoroutineScope()
-    val bottomDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
-    var drawerType by rememberSaveable { mutableStateOf(CalendarScreens.WEEK_CALENDAR_EDITOR) }
+    val holidaysDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
+    val officeDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Closed)
     val isPaused = timerPresenter.uiState.isPaused
     val remainingTime = timerPresenter.uiState.remainingTime
     val progress = timerPresenter.uiState.progressInRemainingTime
-    val sideBackdropState = rememberSideBackdropScaffoldState(SideBackdropValue.Concealed)
+    val sideBackdropState = rememberSideBackdropState(SideBackdropValue.Concealed)
 
-    onCloseBottomDrawer(drawerState = bottomDrawerState) {
+    onCloseBottomDrawer(drawerState = holidaysDrawerState) {
+        timerPresenter.updateRemainingTime()
+        timerPresenter.updateProgressInRemainingTime()
+    }
+    onCloseBottomDrawer(drawerState = officeDrawerState) {
         timerPresenter.updateRemainingTime()
         timerPresenter.updateProgressInRemainingTime()
     }
@@ -56,7 +62,6 @@ fun BaseScreenActivity(
             timerPresenter.updateRemainingTime()
         }
     }
-
     LaunchedEffect(progress) {
         if (!isPaused) {
             timerPresenter.updateProgressInRemainingTime()
@@ -64,46 +69,56 @@ fun BaseScreenActivity(
     }
 
     BaseScreen(
-        bottomDrawerState = bottomDrawerState,
-        bottomDrawerContent = { GetCalendarScreen(type = drawerType) },
         isPaused = isPaused,
         onLaunchTimer = { timerPresenter.setPause(false); timerPresenter.updateRemainingTime() },
         onPauseTimer = { timerPresenter.setPause(true) },
         onOpenWeekCalendar = {
-            drawerType = CalendarScreens.WEEK_CALENDAR_EDITOR
-            scope.launch { bottomDrawerState.open() }
+            scope.launch {
+                holidaysDrawerState.snapTo(BottomDrawerValue.Closed)
+                officeDrawerState.open()
+            }
         },
         onOpenHolidaysCalendar = {
-            drawerType = CalendarScreens.HOLIDAYS_CALENDAR_EDITOR
-            scope.launch { bottomDrawerState.open() }
+            scope.launch {
+                officeDrawerState.snapTo(BottomDrawerValue.Closed)
+                holidaysDrawerState.open()
+            }
         },
         mainContent = {
             TimerScreen(remainingTime = remainingTime, progress = progress)
         },
-        sideDrawerContent = {
+        backLayerContent = {
             SettingsScreenActivity()
         },
-        sideBackdropState = sideBackdropState
+        sideBackdropState = sideBackdropState,
+        holidaysCalendarDrawerState = holidaysDrawerState,
+        officeCalendarDrawerState = officeDrawerState,
+        holidaysCalendarDrawerContent = { HolidaysCalendarEditorScreenActivity() },
+        officeCalendarDrawerContent = { WeekCalendarEditorScreenActivity() },
     )
 }
 
 @ExperimentalMaterialApi
 @Composable
 fun BaseScreen(
-    bottomDrawerState: BottomDrawerState,
-    bottomDrawerContent: @Composable ColumnScope.() -> Unit,
     isPaused: Boolean,
     onLaunchTimer: () -> Unit,
     onPauseTimer: () -> Unit,
     onOpenWeekCalendar: () -> Unit,
     onOpenHolidaysCalendar: () -> Unit,
     mainContent: @Composable BoxScope.() -> Unit,
-    sideDrawerContent: @Composable () -> Unit,
-    sideBackdropState: SideBackdropScaffoldState
+    backLayerContent: @Composable () -> Unit,
+    sideBackdropState: SideBackdropState,
+    holidaysCalendarDrawerState: BottomDrawerState,
+    officeCalendarDrawerState: BottomDrawerState,
+    holidaysCalendarDrawerContent: @Composable ColumnScope.() -> Unit,
+    officeCalendarDrawerContent: @Composable ColumnScope.() -> Unit
 ) {
     BaseLayout(
-        bottomDrawerState = bottomDrawerState,
-        bottomDrawerContent = bottomDrawerContent,
+        holidaysCalendarDrawerState = holidaysCalendarDrawerState,
+        officeCalendarDrawerState = officeCalendarDrawerState,
+        holidaysCalendarDrawerContent = holidaysCalendarDrawerContent,
+        officeCalendarDrawerContent = officeCalendarDrawerContent,
         bottomContent = BottomContent(
             isFloatingActionButtonDocked = true,
             floatingActionButtonPosition = FabPosition.Center,
@@ -123,7 +138,7 @@ fun BaseScreen(
         ),
         mainContent = mainContent,
         sideBackdropState = sideBackdropState,
-        sideDrawerContent = sideDrawerContent
+        backLayerContent = backLayerContent,
     )
 }
 
@@ -132,35 +147,44 @@ fun BaseScreen(
 fun BaseLayout(
     mainContent: @Composable BoxScope.() -> Unit,
     bottomContent: BottomContent,
-    bottomDrawerContent: @Composable ColumnScope.() -> Unit,
-    bottomDrawerState: BottomDrawerState,
-    sideDrawerContent: @Composable () -> Unit,
-    sideBackdropState: SideBackdropScaffoldState
+    backLayerContent: @Composable () -> Unit,
+    sideBackdropState: SideBackdropState,
+    holidaysCalendarDrawerState: BottomDrawerState,
+    officeCalendarDrawerState: BottomDrawerState,
+    holidaysCalendarDrawerContent: @Composable ColumnScope.() -> Unit,
+    officeCalendarDrawerContent: @Composable ColumnScope.() -> Unit
 ) {
     SideBackdrop(
         scaffoldState = sideBackdropState,
         directions = setOf(RevealDirection.Left),
-        backLayerContent = sideDrawerContent,
+        backLayerContent = backLayerContent,
+        gesturesEnabled = !holidaysCalendarDrawerState.isOpen && !officeCalendarDrawerState.isOpen,
         frontLayerContent = {
             BottomDrawer(
-                drawerState = bottomDrawerState,
-                drawerContent = bottomDrawerContent,
-                gesturesEnabled = bottomDrawerState.isOpen,
-                drawerShape = RoundedCornerShape(32.dp, 32.dp, 0.dp, 0.dp),
+                drawerState = holidaysCalendarDrawerState,
+                drawerContent = holidaysCalendarDrawerContent,
+                gesturesEnabled = holidaysCalendarDrawerState.isOpen,
                 content = {
-                    Scaffold(
-                        floatingActionButton = bottomContent.floatingActionButton,
-                        floatingActionButtonPosition = bottomContent.floatingActionButtonPosition,
-                        isFloatingActionButtonDocked = bottomContent.isFloatingActionButtonDocked,
-                        bottomBar = bottomContent.bottomBar
-                    ) { innerPadding ->
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(innerPadding),
-                            content = mainContent
-                        )
-                    }
+                    BottomDrawer(
+                        drawerState = officeCalendarDrawerState,
+                        drawerContent = officeCalendarDrawerContent,
+                        gesturesEnabled = officeCalendarDrawerState.isOpen,
+                        content = {
+                            Scaffold(
+                                floatingActionButton = bottomContent.floatingActionButton,
+                                floatingActionButtonPosition = bottomContent.floatingActionButtonPosition,
+                                isFloatingActionButtonDocked = bottomContent.isFloatingActionButtonDocked,
+                                bottomBar = bottomContent.bottomBar
+                            ) { innerPadding ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(innerPadding),
+                                    content = mainContent
+                                )
+                            }
+                        }
+                    )
                 }
             )
         }

@@ -34,7 +34,7 @@ fun SettingsScreen(
 ) {
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colors.primaryVariant.copy(alpha = 0.25f))
+            .background(MaterialTheme.colors.primaryVariant)
             .fillMaxWidth()
             .padding(24.dp)
     ) {

@@ -7,7 +7,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.hrb.holidays.app.presenters.office.ProgressInDatesRange
 import com.hrb.holidays.app.presenters.office.RemainingTime
-import java.time.LocalDate
 
 
 @Composable
@@ -23,8 +22,8 @@ fun TimerScreen(
         TimerProgression(
             progress = progress?.progress ?: 0f,
             modifier = Modifier.fillMaxWidth(),
-            fromDate = progress?.fromDate ?: LocalDate.of(1, 1, 1),
-            toDate = progress?.toDate ?: LocalDate.of(1, 1, 1)
+            fromDate = progress?.fromDate,
+            toDate = progress?.toDate
         )
         if (remainingTime != null) {
             Timer(remainingTime = remainingTime, modifier = Modifier.fillMaxHeight())

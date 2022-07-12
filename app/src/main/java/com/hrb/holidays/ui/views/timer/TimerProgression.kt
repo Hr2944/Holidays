@@ -18,8 +18,8 @@ import java.time.format.FormatStyle
 fun TimerProgression(
     modifier: Modifier = Modifier,
     progress: Float,
-    fromDate: LocalDate,
-    toDate: LocalDate
+    fromDate: LocalDate?,
+    toDate: LocalDate?
 ) {
     val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
 
@@ -27,8 +27,14 @@ fun TimerProgression(
         ProgressionBar(progress, modifier = Modifier.fillMaxWidth(.95f))
         Spacer(modifier = Modifier.height(8.dp))
         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-            Text(text = fromDate.format(dateFormatter), style = MaterialTheme.typography.caption)
-            Text(text = toDate.format(dateFormatter), style = MaterialTheme.typography.caption)
+            Text(
+                text = fromDate?.format(dateFormatter) ?: "",
+                style = MaterialTheme.typography.caption
+            )
+            Text(
+                text = toDate?.format(dateFormatter) ?: "",
+                style = MaterialTheme.typography.caption
+            )
         }
     }
 }
